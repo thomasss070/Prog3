@@ -1,9 +1,9 @@
 // src/screens/NewExpenseModal.js
-import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TextInput, Button, Alert,
   KeyboardAvoidingView, ScrollView, Platform,
 } from 'react-native';
+import { useState } from 'react';
 
 export default function NewExpenseModal({ navigation }) {
   const [nombreGasto, setNombreGasto] = useState('');

@@ -1,26 +1,22 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
-import ExpenseItem from '../components/ExpenseItem';
 
-const EXPENSES = [
-  { id: '1', description: 'Supermercado', amount: 25000, category: 'Comida' },
-  { id: '2', description: 'Combustible', amount: 18000, category: 'Transporte' },
-  { id: '3', description: 'Internet', amount: 32000, category: 'Servicios' },
-];
+import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
+import ExpenseItem from '../components/ExpensesItem';
+import { useExpenses } from '../context/ExpensesContext';
 
 export default function ExpensesScreen({ navigation }) {
-  const total = EXPENSES.reduce((sum, item) => sum + item.amount, 0);
+  const { expenses } = useExpenses();
+  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mis gastos</Text>
 
       <FlatList
-        data={EXPENSES}
+        data={expenses}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ExpenseItem
-            description={item.description}
+            description={item.title}
             amount={item.amount}
             category={item.category}
           />
