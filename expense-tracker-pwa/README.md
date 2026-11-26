@@ -21,12 +21,11 @@ Versión web instalable (**Progressive Web App**) de **ExpenseTracker**, desarro
 
 | Vista | React Native / Expo Go (Sprint 1) | PWA en Teléfono (Sprint 2) |
 | :--- | :---: | :---: |
-| **Inicio** | <img src="./docs/sprint1/Inicio.jpeg" alt="Inicio Expo" height="420" /> | <img src="./docs/sprint2/Inicio.jpeg" alt="Inicio PWA" height="420" /> |
-| **Listado de gastos** | <img src="./docs/sprint1/Listado.jpeg" alt="Listado Expo" height="420" /> | <img src="./docs/sprint2/Listado.jpeg" alt="Listado PWA" height="420" /> |
-| **Nuevo gasto** | <img src="./docs/sprint1/CrearNuevo.jpeg" alt="Nuevo gasto Expo" height="420" /> | <img src="./docs/sprint2/CrearNuevo.jpeg" alt="Nuevo gasto PWA" height="420" /> |
-| **Detalle de gasto** | — | <img src="./docs/sprint2/Detalle.jpeg" alt="Detalle PWA" height="420" /> |
-| **Ajustes** | — | <img src="./docs/sprint2/Ajustes.jpeg" alt="Ajustes PWA" height="420" /> |
-
+| **Inicio** | <img src="../docs/sprint1/Inicio.jpeg" alt="Inicio Expo" height="420" /> | <img src="../docs/sprint2/Inicio.jpeg" alt="Inicio PWA" height="420" /> |
+| **Listado de gastos** | <img src="../docs/sprint1/Listado.jpeg" alt="Listado Expo" height="420" /> | <img src="../docs/sprint2/Listado.jpeg" alt="Listado PWA" height="420" /> |
+| **Nuevo gasto** | <img src="../docs/sprint1/CrearNuevo.jpeg" alt="Nuevo gasto Expo" height="420" /> | <img src="../docs/sprint2/CrearNuevo.jpeg" alt="Nuevo gasto PWA" height="420" /> |
+| **Detalle de gasto** | — | <img src="../docs/sprint2/Detalle.jpeg" alt="Detalle PWA" height="420" /> |
+| **Ajustes** | — | <img src="../docs/sprint2/Ajustes.jpeg" alt="Ajustes PWA" height="420" /> |
 ## Diferencias encontradas entre React Native (Expo) y PWA
 
 | Aspecto | React Native (Expo — Sprint 1) | Progressive Web App (React + Vite — Sprint 2) |
