@@ -1,12 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const CATEGORY_STYLES = {
-  Comida: { icon: 'cart', color: '#4CAF50' },
-  Transporte: { icon: 'car', color: '#FF9800' },
-  Servicios: { icon: 'wifi', color: '#2196F3' },
-};
-
+import {CATEGORY_STYLES } from '../data/categories'
+ 
 export default function ExpenseItem({ description, amount, category }) {
   const { icon, color } = CATEGORY_STYLES[category] || { icon: 'pricetag', color: '#999' };
 

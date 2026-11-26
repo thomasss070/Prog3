@@ -4,20 +4,33 @@ import {
   KeyboardAvoidingView, ScrollView, Platform,
 } from 'react-native';
 import { useState } from 'react';
+import { useExpenses } from '../context/ExpensesContext';
 
 export default function NewExpenseModal({ navigation }) {
+  const { addExpense } = useExpenses();
   const [nombreGasto, setNombreGasto] = useState('');
   const [monto, setMontoGasto] = useState('');
   const [categoria, setCategoriaGasto] = useState('');
 
-  const handleGuardar = () => {
-    console.log('Gasto guardado:', { nombreGasto, monto, categoria });
-    Alert.alert(
-      'Gasto guardado',
-      `Nombre: ${nombreGasto}\nMonto: ${monto}\nCategoría: ${categoria}`,
-      [{ text: 'OK', onPress: () => navigation.goBack() }]
-    );
-  };
+ const handleGuardar = () => {
+  if (!nombreGasto.trim() || !monto.trim()) {
+    Alert.alert('Faltan datos', 'Ingresá al menos el nombre y el monto.');
+    return;
+  }
+
+  addExpense({
+    title: nombreGasto.trim(),
+    amount: monto,
+    category: categoria.trim(),
+    notes: '',
+  });
+
+  Alert.alert(
+    'Gasto guardado',
+    `Nombre: ${nombreGasto}\nMonto: ${monto}\nCategoría: ${categoria}`,
+    [{ text: 'OK', onPress: () => navigation.goBack() }]
+  );
+};
 
   return (
     <KeyboardAvoidingView

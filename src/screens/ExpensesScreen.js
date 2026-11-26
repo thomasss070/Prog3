@@ -1,5 +1,4 @@
-
-import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import ExpenseItem from '../components/ExpensesItem';
 import { useExpenses } from '../context/ExpensesContext';
 
@@ -15,11 +14,15 @@ export default function ExpensesScreen({ navigation }) {
         data={expenses}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <ExpenseItem
-            description={item.title}
-            amount={item.amount}
-            category={item.category}
-          />
+          <TouchableOpacity
+            onPress={() => navigation.navigate('DetalleGasto', { id: item.id })}
+          >
+            <ExpenseItem
+              description={item.title}
+              amount={item.amount}
+              category={item.category}
+            />
+          </TouchableOpacity>
         )}
         ListFooterComponent={
           <View style={styles.totalRow}>
