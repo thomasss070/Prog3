@@ -4,7 +4,7 @@ Versión web instalable (**Progressive Web App**) de **ExpenseTracker**, desarro
 
 ## URL Pública (HTTPS)
 
-- **Aplicación desplegada:** [https://prog3-sprint1-moow.vercel.app/](https://prog3-sprint1-moow.vercel.app/)
+- **Aplicación desplegada:** [https://prog3-sprint1-moow.vercel.app/](https://prog3-eosin.vercel.app/)
 
 ## Alcance y User Stories completadas
 
