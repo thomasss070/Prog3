@@ -12,7 +12,7 @@ export default function HomeScreen({ onNavegarAGastos, navigation }) {
 
       <View style={styles.buttonContainer}>
         <Button 
-          title="Cargar Nuevo Gasto" 
+          title="Ver registro de gastos" 
           onPress={() => navigation.navigate('Gastos')}
 
           color="#007AFF" 
