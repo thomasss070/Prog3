@@ -1,12 +1,14 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import CategoryBadge from '../components/CategoryBadge';
-import { mockExpenses } from '../data/mockExpenses';
+import { useExpenses } from '../context/ExpensesContext';
 import '../styles/ExpenseDetailScreen.css';
 
 function ExpenseDetailScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const expense = mockExpenses.find((item) => item.id === id);
+  const { expenses, removeExpense } = useExpenses();
+  // Leer por id permite mostrar también el estado de enlace obsoleto/eliminado.
+  const expense = expenses.find((item) => item.id === id);
 
   // Si se entró directo por la URL (o se recargó), no hay a dónde volver
   // dentro de la app: en ese caso se va al listado.
@@ -16,6 +18,15 @@ function ExpenseDetailScreen() {
     } else {
       navigate('/expenses');
     }
+  };
+
+  const handleDelete = () => {
+    if (!window.confirm(`¿Querés eliminar "${expense.description}"?`)) {
+      return;
+    }
+    // Reemplaza el detalle en el historial para volver al listado sin dejarlo atrás.
+    removeExpense(expense.id);
+    navigate('/expenses', { replace: true });
   };
 
   if (!expense) {
@@ -65,9 +76,16 @@ function ExpenseDetailScreen() {
           </div>
           <div className="detail__row">
             <dt>Notas</dt>
-            <dd>{expense.notes}</dd>
+            <dd>{expense.notes || 'Sin notas'}</dd>
           </div>
         </dl>
+        <button
+          type="button"
+          className="detail__button detail__button--danger"
+          onClick={handleDelete}
+        >
+          Eliminar
+        </button>
       </main>
     </div>
   );

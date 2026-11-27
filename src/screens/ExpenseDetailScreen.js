@@ -3,6 +3,7 @@ import { useExpenses } from '../context/ExpensesContext';
 
 export default function ExpenseDetailScreen({ route, navigation }) {
   const { expenses, removeExpense } = useExpenses();
+  // La navegación pasa el id para que el detalle siempre lea el estado actual.
   const expense = expenses.find((e) => e.id === route.params.id);
 
   // Si el gasto ya no existe (por ejemplo, justo después de eliminarlo)
@@ -21,6 +22,7 @@ export default function ExpenseDetailScreen({ route, navigation }) {
         text: 'Eliminar',
         style: 'destructive',
         onPress: () => {
+          // El usuario confirmó; se elimina y se vuelve al listado.
           removeExpense(expense.id);
           navigation.goBack();
         },

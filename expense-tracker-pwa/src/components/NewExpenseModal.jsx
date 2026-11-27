@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useExpenses } from '../context/ExpensesContext';
 import '../styles/NewExpenseModal.css';
 
 const CATEGORIES = ['Comida', 'Transporte', 'Servicios'];
@@ -9,6 +10,8 @@ function NewExpenseModal({ open, onClose }) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
+  const [error, setError] = useState('');
+  const { addExpense } = useExpenses();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -21,6 +24,7 @@ function NewExpenseModal({ open, onClose }) {
     setDescription('');
     setAmount('');
     setCategory(CATEGORIES[0]);
+    setError('');
   };
 
   // Se dispara al cerrar con Esc, con Cancelar o con dialog.close()
@@ -31,10 +35,30 @@ function NewExpenseModal({ open, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Nuevo gasto:', {
-      description,
-      amount: Number(amount.replace(',', '.')),
+    // Normaliza coma decimal y rechaza valores no numéricos o no positivos.
+    const parsedAmount = Number(amount.trim().replace(',', '.'));
+
+    if (!description.trim()) {
+      setError('Ingresá el nombre del gasto.');
+      return;
+    }
+
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      setError('Ingresá un monto numérico mayor que cero.');
+      return;
+    }
+
+    // Ajusta la fecha al huso local antes de guardarla como YYYY-MM-DD.
+    const now = new Date();
+    const date = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
+    addExpense({
+      description: description.trim(),
+      amount: parsedAmount,
       category,
+      date,
+      notes: '',
     });
     onClose();
   };
@@ -63,7 +87,10 @@ function NewExpenseModal({ open, onClose }) {
             className="expense-modal__input"
             type="text"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              setError('');
+            }}
             placeholder="Ej: Supermercado"
             required
           />
@@ -79,7 +106,10 @@ function NewExpenseModal({ open, onClose }) {
             type="text"
             inputMode="decimal"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              setAmount(e.target.value);
+              setError('');
+            }}
             placeholder="0"
             required
           />
@@ -102,6 +132,12 @@ function NewExpenseModal({ open, onClose }) {
             ))}
           </div>
         </fieldset>
+
+        {error ? (
+          <p className="expense-modal__error" role="alert">
+            {error}
+          </p>
+        ) : null}
 
         <div className="expense-modal__actions">
           <button

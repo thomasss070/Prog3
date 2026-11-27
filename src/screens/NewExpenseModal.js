@@ -12,22 +12,30 @@ export default function NewExpenseModal({ navigation }) {
   const [monto, setMontoGasto] = useState('');
   const [categoria, setCategoriaGasto] = useState('');
 
- const handleGuardar = () => {
-  if (!nombreGasto.trim() || !monto.trim()) {
-    Alert.alert('Faltan datos', 'Ingresá al menos el nombre y el monto.');
+  const handleGuardar = () => {
+  // Acepta coma decimal y convierte el texto antes de validar y guardar.
+  const amount = Number(monto.trim().replace(',', '.'));
+
+  if (!nombreGasto.trim()) {
+    Alert.alert('Faltan datos', 'Ingresá el nombre del gasto.');
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    Alert.alert('Monto inválido', 'Ingresá un monto numérico mayor que cero.');
     return;
   }
 
   addExpense({
     title: nombreGasto.trim(),
-    amount: monto,
+    amount,
     category: categoria.trim(),
     notes: '',
   });
 
   Alert.alert(
     'Gasto guardado',
-    `Nombre: ${nombreGasto}\nMonto: ${monto}\nCategoría: ${categoria}`,
+    `Nombre: ${nombreGasto.trim()}\nMonto: ${amount}\nCategoría: ${categoria}`,
     [{ text: 'OK', onPress: () => navigation.goBack() }]
   );
 };

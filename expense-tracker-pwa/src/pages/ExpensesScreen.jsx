@@ -1,9 +1,11 @@
 import ExpenseCard from '../components/ExpenseCard';
-import { mockExpenses } from '../data/mockExpenses';
+import { useExpenses } from '../context/ExpensesContext';
 import '../styles/ExpensesScreen.css';
 
 function ExpensesScreen({ onNewExpense }) {
-  const total = mockExpenses.reduce((sum, item) => sum + item.amount, 0);
+  const { expenses } = useExpenses();
+  // El total usa la misma lista compartida que se muestra debajo.
+  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
   return (
     <div className="expenses">
@@ -13,7 +15,9 @@ function ExpensesScreen({ onNewExpense }) {
 
       <main className="expenses__main">
         <ul className="expenses__list">
-          {mockExpenses.map((expense) => (
+          {expenses.length === 0 ? (
+            <li className="expenses__empty">Todavía no registraste gastos.</li>
+          ) : expenses.map((expense) => (
             <ExpenseCard key={expense.id} expense={expense} />
           ))}
         </ul>

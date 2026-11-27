@@ -97,6 +97,12 @@
   gap: 12px;
 }
 
+.expense-modal__error {
+  margin: 0;
+  color: #b00020;
+  font-size: 14px;
+}
+
 .expense-modal__button {
   flex: 1;
   min-height: 44px;

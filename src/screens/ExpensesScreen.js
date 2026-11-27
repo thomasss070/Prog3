@@ -4,8 +4,10 @@ import { useExpenses } from '../context/ExpensesContext';
 
 export default function ExpensesScreen({ navigation }) {
   const { expenses } = useExpenses();
+  // El total se deriva del mismo estado que alimenta las filas de la lista.
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
+  // La navegación envía solo el id; el detalle consulta el gasto en el Context.
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mis gastos</Text>
@@ -13,6 +15,9 @@ export default function ExpensesScreen({ navigation }) {
       <FlatList
         data={expenses}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={
+          <Text style={styles.emptyMessage}>Todavía no registraste gastos.</Text>
+        }
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => navigation.navigate('DetalleGasto', { id: item.id })}
@@ -43,6 +48,7 @@ export default function ExpensesScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
+  emptyMessage: { color: '#666', fontSize: 16, paddingVertical: 24, textAlign: 'center' },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

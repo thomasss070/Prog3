@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { mockExpenses } from '../data/mockExpenses';
+import { useExpenses } from '../context/ExpensesContext';
 import '../styles/HomeScreen.css';
 
 function HomeScreen({ onNewExpense }) {
-  const total = mockExpenses.reduce((sum, item) => sum + item.amount, 0);
-  const cantidad = mockExpenses.length;
+  const { expenses } = useExpenses();
+  // Ambos indicadores se calculan desde el estado real de gastos.
+  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const cantidad = expenses.length;
 
   return (
     <div className="home">
@@ -18,6 +20,10 @@ function HomeScreen({ onNewExpense }) {
           Esta aplicación te permitirá registrar y administrar tus gastos
           diarios de forma sencilla.
         </p>
+
+        {cantidad === 0 ? (
+          <p className="home__empty">Todavía no registraste gastos.</p>
+        ) : null}
 
         <section className="home__summary" aria-label="Resumen de gastos">
           <div className="home__summary-item">

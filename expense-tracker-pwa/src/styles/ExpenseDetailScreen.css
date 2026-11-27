@@ -68,3 +68,10 @@
   text-align: center;
   text-decoration: none;
 }
+
+.detail__button--danger {
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  background: #d32f2f;
+}
