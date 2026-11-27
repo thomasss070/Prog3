@@ -3,7 +3,7 @@
   min-height: 100dvh;
   padding: 20px;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--app-background);
 }
 
 .detail__header {
@@ -46,11 +46,11 @@
   justify-content: space-between;
   gap: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .detail__row dt {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .detail__row dd {

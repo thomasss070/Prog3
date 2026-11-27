@@ -7,7 +7,7 @@ const CATEGORIES = ['Comida', 'Transporte', 'Servicios'];
 
 function NewExpenseModal({ open, onClose }) {
   const dialogRef = useRef(null);
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [error, setError] = useState('');
@@ -21,7 +21,7 @@ function NewExpenseModal({ open, onClose }) {
   }, [open]);
 
   const resetForm = () => {
-    setDescription('');
+    setTitle('');
     setAmount('');
     setCategory(CATEGORIES[0]);
     setError('');
@@ -38,7 +38,7 @@ function NewExpenseModal({ open, onClose }) {
     // Normaliza coma decimal y rechaza valores no numéricos o no positivos.
     const parsedAmount = Number(amount.trim().replace(',', '.'));
 
-    if (!description.trim()) {
+    if (!title.trim()) {
       setError('Ingresá el nombre del gasto.');
       return;
     }
@@ -48,18 +48,14 @@ function NewExpenseModal({ open, onClose }) {
       return;
     }
 
-    // Ajusta la fecha al huso local antes de guardarla como YYYY-MM-DD.
-    const now = new Date();
-    const date = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-      .toISOString()
-      .slice(0, 10);
-    addExpense({
-      description: description.trim(),
-      amount: parsedAmount,
-      category,
-      date,
-      notes: '',
-    });
+    // Agrega el gasto al contexto y cierra el modal
+   addExpense({
+   title: title.trim(),
+   amount: parsedAmount,
+   category,
+   notes: '',
+  });
+
     onClose();
   };
 
@@ -79,16 +75,16 @@ function NewExpenseModal({ open, onClose }) {
 
       <form className="expense-modal__form" onSubmit={handleSubmit}>
         <div className="expense-modal__field">
-          <label className="expense-modal__label" htmlFor="expense-description">
+          <label className="expense-modal__label" htmlFor="expense-title">
             Nombre del gasto
           </label>
           <input
-            id="expense-description"
+            id="expense-title"
             className="expense-modal__input"
             type="text"
-            value={description}
+            value={title}
             onChange={(e) => {
-              setDescription(e.target.value);
+              setTitle(e.target.value);
               setError('');
             }}
             placeholder="Ej: Supermercado"

@@ -1,7 +1,7 @@
 {
   "name": "ExpenseTracker",
   "short_name": "Gastos",
-  "description": "Registrá y controlá tus gastos desde el teléfono",
+  "title": "Registrá y controlá tus gastos desde el teléfono",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

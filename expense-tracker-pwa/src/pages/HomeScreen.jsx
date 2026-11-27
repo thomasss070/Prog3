@@ -16,7 +16,7 @@ function HomeScreen({ onNewExpense }) {
       </header>
 
       <main className="home__main">
-        <p className="home__description">
+        <p className="home__title">
           Esta aplicación te permitirá registrar y administrar tus gastos
           diarios de forma sencilla.
         </p>

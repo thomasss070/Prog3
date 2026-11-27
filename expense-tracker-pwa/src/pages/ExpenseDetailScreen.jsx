@@ -21,7 +21,7 @@ function ExpenseDetailScreen() {
   };
 
   const handleDelete = () => {
-    if (!window.confirm(`¿Querés eliminar "${expense.description}"?`)) {
+    if (!window.confirm(`¿Querés eliminar "${expense.title}"?`)) {
       return;
     }
     // Reemplaza el detalle en el historial para volver al listado sin dejarlo atrás.
@@ -43,10 +43,11 @@ function ExpenseDetailScreen() {
     );
   }
 
-  const fecha = new Date(`${expense.date}T00:00:00`).toLocaleDateString(
-    'es-AR',
-    { day: '2-digit', month: 'long', year: 'numeric' }
-  );
+ const fecha = new Date(expense.createdAt).toLocaleDateString('es-AR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
 
   return (
     <div className="detail">
@@ -57,7 +58,7 @@ function ExpenseDetailScreen() {
       </header>
 
       <main className="detail__main">
-        <h1 className="detail__title">{expense.description}</h1>
+        <h1 className="detail__title">{expense.title}</h1>
 
         <dl className="detail__list">
           <div className="detail__row">

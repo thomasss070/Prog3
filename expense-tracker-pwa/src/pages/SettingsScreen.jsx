@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import '../styles/SettingsScreen.css';
+import { useSettings } from '../context/SettingsContext';
 
 function SettingsScreen() {
-  const [notifications, setNotifications] = useState(true);
+  const { settings, updateSetting } = useSettings();
 
   return (
     <div className="settings">
@@ -18,8 +18,20 @@ function SettingsScreen() {
             className="settings__switch"
             type="checkbox"
             role="switch"
-            checked={notifications}
-            onChange={(e) => setNotifications(e.target.checked)}
+            checked={settings.notifications}
+            onChange={(e) => updateSetting('notifications', e.target.checked)}
+          />
+        </label>
+
+        <label className="settings__row" htmlFor="darkMode">
+          <span>Modo oscuro</span>
+          <input
+            id="darkMode"
+            className="settings__switch"
+            type="checkbox"
+            role="switch"
+            checked={settings.darkMode}
+            onChange={(e) => updateSetting('darkMode', e.target.checked)}
           />
         </label>
       </main>

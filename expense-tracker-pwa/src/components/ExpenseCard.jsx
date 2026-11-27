@@ -7,8 +7,8 @@ function ExpenseCard({ expense }) {
     <li className="expense-card">
       <Link to={`/expenses/${expense.id}`} className="expense-card__link">
         <div className="expense-card__info">
-          <span className="expense-card__description">
-            {expense.description}
+          <span className="expense-card__title">
+            {expense.title}
           </span>
           <CategoryBadge category={expense.category} />
         </div>

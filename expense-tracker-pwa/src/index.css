@@ -1,12 +1,43 @@
+:root {
+  color-scheme: light;
+  --app-background: #fff;
+  --surface-background: #fff;
+  --surface-muted: #f2f2f7;
+  --text-primary: #222;
+  --text-secondary: #666;
+  --border-color: #e5e5e5;
+  --field-border: #ccc;
+  --badge-background: #e8f1ff;
+  --badge-text: #007aff;
+  --switch-off: #ccc;
+  --danger-text: #b00020;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', system-ui, sans-serif;
-  background: #fff;
-  color: #222;
+  min-height: 100vh;
+  background: var(--app-background);
+  color: var(--text-primary);
 }
 
 button,
 input,
 select {
   font-family: inherit;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --app-background: #121212;
+  --surface-background: #1e1e1e;
+  --surface-muted: #2a2a2a;
+  --text-primary: #f5f5f5;
+  --text-secondary: #b3b3b3;
+  --border-color: #3a3a3a;
+  --field-border: #555;
+  --badge-background: #243b55;
+  --badge-text: #a7c7ff;
+  --switch-off: #666;
+  --danger-text: #ff8293;
 }

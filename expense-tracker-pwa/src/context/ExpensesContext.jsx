@@ -1,31 +1,54 @@
-import { createContext, useContext, useState } from 'react';
-import { mockExpenses } from '../data/mockExpenses';
+import { createContext, useContext, useEffect, useState } from 'react';
+
+const EXPENSES_KEY = '@expensetracker/expenses';
 
 const ExpensesContext = createContext(null);
 
+// Lectura síncrona y segura: si el JSON está dañado, arranca con lista vacía
+function readExpenses() {
+  try {
+    const raw = localStorage.getItem(EXPENSES_KEY);
+    if (raw === null) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn('Gastos guardados dañados, se empieza con lista vacía:', error);
+    return [];
+  }
+}
+
 export function ExpensesProvider({ children }) {
-  // Conserva los ejemplos existentes como datos iniciales de la aplicación.
-  const [expenses, setExpenses] = useState(mockExpenses);
+  // Hidratación: localStorage es síncrono, así que el valor inicial ya viene leído
+  const [expenses, setExpenses] = useState(() => readExpenses());
+  const isLoaded = true;
+
+  // Persistencia: guarda cada vez que cambian los gastos
+  useEffect(() => {
+    try {
+      localStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses));
+    } catch (error) {
+      console.warn('No se pudieron guardar los gastos:', error);
+    }
+  }, [expenses]);
 
   const addExpense = (data) => {
     const newExpense = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       ...data,
-      // El Context mantiene el monto numérico para los cálculos de la app.
       amount: Number(data.amount),
+      createdAt: new Date().toISOString(),
     };
     setExpenses((currentExpenses) => [newExpense, ...currentExpenses]);
   };
 
   const removeExpense = (id) => {
-    // Las pantallas consumidoras reciben inmediatamente la lista actualizada.
     setExpenses((currentExpenses) =>
       currentExpenses.filter((expense) => expense.id !== id)
     );
   };
 
   return (
-    <ExpensesContext.Provider value={{ expenses, addExpense, removeExpense }}>
+    <ExpensesContext.Provider value={{ expenses, isLoaded, addExpense, removeExpense }}>
       {children}
     </ExpensesContext.Provider>
   );

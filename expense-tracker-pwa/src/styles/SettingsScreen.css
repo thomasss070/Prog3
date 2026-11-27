@@ -1,7 +1,7 @@
 .settings {
   padding: 20px;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--app-background);
 }
 
 .settings__header {
@@ -25,12 +25,12 @@
   align-items: center;
   min-height: 44px;
   padding: 8px 4px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--border-color);
   font-size: 16px;
 }
 
 .settings__row:active {
-  background: #f2f2f7;
+  background: var(--surface-muted);
 }
 
 .settings__switch {
@@ -40,7 +40,7 @@
   width: 51px;
   height: 31px;
   border-radius: 16px;
-  background: #ccc;
+  background: var(--switch-off);
   cursor: pointer;
   transition: background 0.2s;
 }
