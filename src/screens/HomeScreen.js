@@ -1,33 +1,37 @@
-// src/screens/HomeScreen.js
 
 import { StyleSheet, Text, View, Button } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import { useExpenses } from '../context/ExpensesContext';
+
 
 export default function HomeScreen({ onNavegarAGastos, navigation }) {
   const { expenses } = useExpenses();
+  const { colors } = useTheme();
   // El resumen refleja las altas y bajas del Context sin mantener otro estado.
   const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ExpenseTracker</Text>
-      <Text style={styles.subtitle}>¡Bienvenido/a!</Text>
-      <Text style={styles.description}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>ExpenseTracker</Text>
+      <Text style={[styles.subtitle, { color: colors.text }]}>¡Bienvenido/a!</Text>
+      <Text style={[styles.description, { color: colors.text }]}>
         Esta aplicación te permitirá registrar y administrar tus gastos diarios de forma sencilla.
       </Text>
 
-    {expenses.length === 0 ? (
-  <Text style={styles.emptyMessage}>Todavía no registraste gastos.</Text>
-) : (
-  <View style={styles.summary}>
-    <Text style={styles.summaryText}>
-      Total registrado: ${total.toLocaleString('es-AR')}
-    </Text>
-    <Text style={styles.summaryText}>
-      Movimientos: {expenses.length}
-    </Text>
-  </View>
-)}
+      {expenses.length === 0 ? (
+        <Text style={[styles.emptyMessage, { color: colors.text }]}>
+          Todavía no registraste gastos.
+        </Text>
+      ) : (
+        <View style={styles.summary}>
+          <Text style={[styles.summaryText, { color: colors.text }]}>
+            Total registrado: ${total.toLocaleString('es-AR')}
+          </Text>
+          <Text style={[styles.summaryText, { color: colors.text }]}>
+            Movimientos: {expenses.length}
+          </Text>
+        </View>
+      )}
 
       <View style={styles.buttonContainer}>
         <Button 

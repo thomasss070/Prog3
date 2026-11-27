@@ -1,16 +1,18 @@
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import { useExpenses } from '../context/ExpensesContext';
 
 export default function ExpenseDetailScreen({ route, navigation }) {
   const { expenses, removeExpense } = useExpenses();
+  const { colors } = useTheme();
   // La navegación pasa el id para que el detalle siempre lea el estado actual.
   const expense = expenses.find((e) => e.id === route.params.id);
 
   // Si el gasto ya no existe (por ejemplo, justo después de eliminarlo)
   if (!expense) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.label}>No se encontró el gasto.</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={[styles.label, { color: colors.text }]}>No se encontró el gasto.</Text>
       </View>
     );
   }
@@ -31,22 +33,24 @@ export default function ExpenseDetailScreen({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{expense.title}</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>{expense.title}</Text>
       <Text style={styles.amount}>${expense.amount}</Text>
 
       <Text style={styles.label}>Categoría</Text>
-      <Text style={styles.value}>{expense.category || 'Sin categoría'}</Text>
+      <Text style={[styles.value, { color: colors.text }]}>
+        {expense.category || 'Sin categoría'}
+      </Text>
 
       <Text style={styles.label}>Fecha</Text>
-      <Text style={styles.value}>
+      <Text style={[styles.value, { color: colors.text }]}>
         {new Date(expense.createdAt).toLocaleDateString('es-AR')}
       </Text>
 
       {expense.notes ? (
         <>
           <Text style={styles.label}>Notas</Text>
-          <Text style={styles.value}>{expense.notes}</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{expense.notes}</Text>
         </>
       ) : null}
 

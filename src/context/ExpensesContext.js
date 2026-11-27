@@ -1,23 +1,48 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const EXPENSES_KEY = '@expensetracker/expenses';
 
 const ExpensesContext = createContext(null);
 
-// Ejemplos iniciales; al borrar todos, las pantallas muestran el estado vacío.
-const INITIAL_EXPENSES = [
-  { id: '1', title: 'Supermercado', amount: 25000, category: 'Comida', notes: '', createdAt: new Date().toISOString() },
-  { id: '2', title: 'Combustible', amount: 18000, category: 'Transporte', notes: '', createdAt: new Date().toISOString() },
-  { id: '3', title: 'Internet', amount: 32000, category: 'Servicios', notes: '', createdAt: new Date().toISOString() },
-];
-
 export function ExpensesProvider({ children }) {
-  // Mantiene los gastos disponibles para todas las pantallas durante la sesión.
-  const [expenses, setExpenses] = useState(INITIAL_EXPENSES);
+  const [expenses, setExpenses] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Hidratación: lee lo guardado una sola vez al montar
+  useEffect(() => {
+    const hydrate = async () => {
+      try {
+        const raw = await AsyncStorage.getItem(EXPENSES_KEY);
+        if (raw !== null) {
+          setExpenses(JSON.parse(raw));
+        }
+      } catch (error) {
+        console.warn('No se pudieron leer los gastos:', error);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    hydrate();
+  }, []);
+
+  // Persistencia: guarda cada vez que cambian, solo si ya terminó la lectura
+  useEffect(() => {
+    if (!isLoaded) return;
+    const persist = async () => {
+      try {
+        await AsyncStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses));
+      } catch (error) {
+        console.warn('No se pudieron guardar los gastos:', error);
+      }
+    };
+    persist();
+  }, [expenses, isLoaded]);
 
   const addExpense = (data) => {
     const newExpense = {
       id: Date.now().toString(),
       ...data,
-      // Los totales y resúmenes necesitan operar con montos numéricos.
       amount: Number(data.amount),
       createdAt: new Date().toISOString(),
     };
@@ -25,22 +50,16 @@ export function ExpensesProvider({ children }) {
   };
 
   const removeExpense = (id) => {
-    // Cambiar el estado compartido actualiza a la vez el listado y los resúmenes.
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   };
 
   return (
-    <ExpensesContext.Provider value={{ expenses, addExpense, removeExpense }}>
+    <ExpensesContext.Provider value={{ expenses, isLoaded, addExpense, removeExpense }}>
       {children}
     </ExpensesContext.Provider>
   );
 }
 
 export function useExpenses() {
-  const context = useContext(ExpensesContext);
-  if (!context) {
-    // Detecta pantallas que no estén dentro del ExpensesProvider.
-    throw new Error('useExpenses debe usarse dentro de ExpensesProvider.');
-  }
-  return context;
+  return useContext(ExpensesContext);
 }

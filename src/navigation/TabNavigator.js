@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import ExpensesScreen from '../screens/ExpensesScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -9,6 +10,7 @@ export default function TabNavigator() {
     <Tab.Navigator>
       <Tab.Screen name="Inicio" component={HomeScreen} />
       <Tab.Screen name="Gastos" component={ExpensesScreen} />
+      <Tab.Screen name="Ajustes" component={SettingsScreen} />
     </Tab.Navigator>
   );
 }

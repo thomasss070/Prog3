@@ -1,22 +1,26 @@
 import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import ExpenseItem from '../components/ExpensesItem';
 import { useExpenses } from '../context/ExpensesContext';
 
 export default function ExpensesScreen({ navigation }) {
   const { expenses } = useExpenses();
+  const { colors } = useTheme();
   // El total se deriva del mismo estado que alimenta las filas de la lista.
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
   // La navegación envía solo el id; el detalle consulta el gasto en el Context.
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mis gastos</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Mis gastos</Text>
 
       <FlatList
         data={expenses}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
-          <Text style={styles.emptyMessage}>Todavía no registraste gastos.</Text>
+          <Text style={[styles.emptyMessage, { color: colors.text }]}>
+            Todavía no registraste gastos.
+          </Text>
         }
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -31,8 +35,8 @@ export default function ExpensesScreen({ navigation }) {
         )}
         ListFooterComponent={
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalAmount}>${total}</Text>
+            <Text style={[styles.totalLabel, { color: colors.text }]}>Total</Text>
+            <Text style={[styles.totalAmount, { color: colors.text }]}>${total}</Text>
           </View>
         }
       />
