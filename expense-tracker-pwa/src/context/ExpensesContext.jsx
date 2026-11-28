@@ -1,50 +1,96 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-
-const EXPENSES_KEY = '@expensetracker/expenses';
+import { db } from '../services/firebase';
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from 'firebase/firestore';
 
 const ExpensesContext = createContext(null);
 
-// Lectura síncrona y segura: si el JSON está dañado, arranca con lista vacía
-function readExpenses() {
-  try {
-    const raw = localStorage.getItem(EXPENSES_KEY);
-    if (raw === null) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    console.warn('Gastos guardados dañados, se empieza con lista vacía:', error);
-    return [];
+// Convierte Timestamp de Firestore (o cualquier formato previo) a string ISO válido
+function normalizeCreatedAt(value) {
+  if (!value) return new Date().toISOString();
+
+  // Timestamp nativo de Firestore
+  if (typeof value.toDate === 'function') {
+    return value.toDate().toISOString();
   }
+
+  // Objeto plano con segundos (por ejemplo, estimación pendiente o serialización)
+  if (typeof value === 'object' && typeof value.seconds === 'number') {
+    return new Date(value.seconds * 1000).toISOString();
+  }
+
+  // String ISO, Date o número
+  const parsed = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(parsed.getTime())
+    ? new Date().toISOString()
+    : parsed.toISOString();
 }
 
 export function ExpensesProvider({ children }) {
-  // Hidratación: localStorage es síncrono, así que el valor inicial ya viene leído
-  const [expenses, setExpenses] = useState(() => readExpenses());
-  const isLoaded = true;
+  // Estado de gastos sincronizado desde Firestore y bandera de primera carga
+  const [expenses, setExpenses] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Persistencia: guarda cada vez que cambian los gastos
+  // Suscripción en tiempo real a la colección "expenses" ordenada por fecha descendente
   useEffect(() => {
-    try {
-      localStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses));
-    } catch (error) {
-      console.warn('No se pudieron guardar los gastos:', error);
-    }
-  }, [expenses]);
+    const q = query(collection(db, 'expenses'), orderBy('createdAt', 'desc'));
 
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((document) => {
+          // estimate evita que createdAt sea null mientras la escritura está pendiente offline
+          const data = document.data({ serverTimestamps: 'estimate' });
+          return {
+            id: document.id,
+            ...data,
+            createdAt: normalizeCreatedAt(data.createdAt),
+          };
+        });
+
+        setExpenses(items);
+        setIsLoaded(true);
+      },
+      (error) => {
+        console.error('Error al escuchar gastos en Firestore:', error);
+        setIsLoaded(true);
+      }
+    );
+
+    // Cancela la suscripción cuando el Provider se desmonta
+    return () => unsubscribe();
+  }, []);
+
+  // Alta en Firestore: no bloquea con await para que el modal cierre al instante (Optimistic UI)
   const addExpense = (data) => {
     const newExpense = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      ...data,
+      title: typeof data.title === 'string' ? data.title.trim() : '',
       amount: Number(data.amount),
-      createdAt: new Date().toISOString(),
+      category: data.category ?? '',
+      notes: typeof data.notes === 'string' ? data.notes.trim() : '',
+      createdAt: serverTimestamp(),
     };
-    setExpenses((currentExpenses) => [newExpense, ...currentExpenses]);
+
+    addDoc(collection(db, 'expenses'), newExpense).catch((error) => {
+      console.error('Error al guardar el gasto en Firestore:', error);
+    });
   };
 
-  const removeExpense = (id) => {
-    setExpenses((currentExpenses) =>
-      currentExpenses.filter((expense) => expense.id !== id)
-    );
+  // Baja en Firestore por ID de documento; onSnapshot actualiza ambas apps al instante
+  const removeExpense = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'expenses', id));
+    } catch (error) {
+      console.error('Error al eliminar el gasto en Firestore:', error);
+    }
   };
 
   return (

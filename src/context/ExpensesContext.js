@@ -1,56 +1,74 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const EXPENSES_KEY = '@expensetracker/expenses';
+import { db } from '../services/firebase';
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from 'firebase/firestore';
 
 const ExpensesContext = createContext(null);
 
 export function ExpensesProvider({ children }) {
+  // Estado de gastos sincronizado desde Firestore y bandera de primera carga
   const [expenses, setExpenses] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Hidratación: lee lo guardado una sola vez al montar
+  // Suscripción en tiempo real a la colección "expenses" ordenada por fecha descendente
   useEffect(() => {
-    const hydrate = async () => {
-      try {
-        const raw = await AsyncStorage.getItem(EXPENSES_KEY);
-        if (raw !== null) {
-          setExpenses(JSON.parse(raw));
-        }
-      } catch (error) {
-        console.warn('No se pudieron leer los gastos:', error);
-      } finally {
+    const q = query(collection(db, 'expenses'), orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((document) => {
+          // estimate evita que createdAt sea null mientras la escritura está pendiente offline
+          const data = document.data({ serverTimestamps: 'estimate' });
+          return {
+            id: document.id,
+            ...data,
+          };
+        });
+
+        setExpenses(items);
+        setIsLoaded(true);
+      },
+      (error) => {
+        console.error('Error al escuchar gastos en Firestore:', error);
         setIsLoaded(true);
       }
-    };
-    hydrate();
+    );
+
+    // Cancela la suscripción cuando el Provider se desmonta
+    return () => unsubscribe();
   }, []);
 
-  // Persistencia: guarda cada vez que cambian, solo si ya terminó la lectura
-  useEffect(() => {
-    if (!isLoaded) return;
-    const persist = async () => {
-      try {
-        await AsyncStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses));
-      } catch (error) {
-        console.warn('No se pudieron guardar los gastos:', error);
-      }
-    };
-    persist();
-  }, [expenses, isLoaded]);
-
+  // Alta en Firestore: no bloquea con await para que el modal cierre al instante (Optimistic UI)
   const addExpense = (data) => {
     const newExpense = {
-      id: Date.now().toString(),
-      ...data,
+      title: data.title.trim(),
       amount: Number(data.amount),
-      createdAt: new Date().toISOString(),
+      category: data.category,
+      notes: data.notes ? data.notes.trim() : '',
+      createdAt: serverTimestamp(),
     };
-    setExpenses((prev) => [newExpense, ...prev]);
+
+    addDoc(collection(db, 'expenses'), newExpense).catch((error) => {
+      console.error('Error al guardar el gasto en Firestore:', error);
+    });
   };
 
-  const removeExpense = (id) => {
-    setExpenses((prev) => prev.filter((e) => e.id !== id));
+  // Baja en Firestore por ID de documento; onSnapshot actualiza ambas apps al instante
+  const removeExpense = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'expenses', id));
+    } catch (error) {
+      console.error('Error al eliminar el gasto en Firestore:', error);
+    }
   };
 
   return (
@@ -61,5 +79,9 @@ export function ExpensesProvider({ children }) {
 }
 
 export function useExpenses() {
-  return useContext(ExpensesContext);
+  const context = useContext(ExpensesContext);
+  if (!context) {
+    throw new Error('useExpenses debe usarse dentro de ExpensesProvider.');
+  }
+  return context;
 }
